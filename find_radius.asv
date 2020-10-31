@@ -49,21 +49,17 @@ binary_filled = imfill(binary_image,'holes');
 stats = regionprops('table', L, 'Area', 'FilledImage');
 % Find the largest object, which is the actuator, and the index it exists
 % at
-% TODO: maybe also check object circularity to make sure it's the actuator
 [MaxArea, MaxAreaIndex] = max(stats.Area);
-% Get just the object in an image (needs to get out of cell struct)
+% Get just the object in an image
 isolated_actuator_img = cell2mat(stats.FilledImage(MaxAreaIndex));
 figure
 imshow(isolated_actuator_img)
 title('Largest object image')
 
 %% Analyze the isolated object
-objstats = regionprops('table', isolated_actuator_img, 'MajoraxisLength', 'MinoraxisLength', 'Orientation', 'Centroid');
-majAxisLength = objstats.MajorAxisLength;
-minAxisLength = objstats.MinorAxisLength;
-center = objstats.Centroid;
-
-% TODO: use the centroid and axes to construct the ellipse
+objstats = regionprops('table', isolated_actuator_img, 'MajoraxisLength', 'MinoraxisLength', 'Orientation');
+majAxisLength = objstats.MajorAxisLength
+minAxisLength = objstats.MinorAxisLength
 
 
 
