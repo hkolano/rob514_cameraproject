@@ -8,7 +8,7 @@ actuator from a picture.
 Dependencies:
 Matlab Image Processing Toolbox
 
-Last modified by Hannah Kolano 10/31/2020
+Last modified by Aiden Shaevitz 11/3/2020
 %}
 clc
 clearvars
