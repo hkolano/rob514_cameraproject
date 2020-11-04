@@ -8,7 +8,8 @@ actuator from a picture.
 Dependencies:
 Matlab Image Processing Toolbox
 
-Last modified by Aiden Shaevitz 11/03/2020
+Last modified by Aiden Shaevitz 11/3/2020
+
 %}
 clc
 clearvars
@@ -25,7 +26,7 @@ pixel2 = [3630 2545];
 ratio = 15 / (3630-868);
 
 % read in the image of the actuator
-actuator_pic_1 = imread('Pictures/DSC_0276.JPG');
+actuator_pic_1 = imread('Pictures/DSC_0278.JPG');
 % imshow(actuator_pic_1) % shows image in window
 % whos actuator_pic_1 % prints info about image
 
@@ -38,7 +39,8 @@ imwrite(gray_image, 'Progression/GrayImage.png')
 % title('Grayscale version of image')
 
 % Make the image binary
-threshold = 0.65; % set threshold for creating binary image
+% Threshold for creating binary image, may need adjusting for each image
+threshold = 0.62; 
 binary_image = imbinarize(gray_image, threshold);
 imwrite(binary_image, 'Progression/BinaryImage.png')
 % figure
@@ -86,11 +88,12 @@ radius = physicalWidth / 2;
 
 %% Plot object (unrotated)
 % Display the actuator
-figure; subplot(2, 4, [1 2 5 6]); hold on
+figure; set(gcf,'Position',[100 100 1000 500]); subplot(1,2,1);
+hold on
 imshow(isolated_actuator_img)
 plot([minPixel_x maxPixel_x], [minPixel_y maxPixel_y], 'r', 'LineWidth', 5)
 title('Unrotated Actuator')
-xlabel(['Radius of inflated actuator = ', num2str(round(radius, 3)), 'cm'])
+xlabel(['Radius of inflated actuator = ', num2str(round(radius, 3)), 'cm'],'Position',[600 1750])
 
 %%  Construct ellipse from object analysis
 theta = linspace(0, 2*pi);
@@ -123,10 +126,15 @@ physicalWidth_r = pixelWidth_r * ratio;
 % Radius (cm)
 radius_r = physicalWidth_r / 2;
 % Plot rotated object
-subplot(2,4,[3 4 7 8]); hold on
+p1 = subplot(1,2,2); 
+currentPos =  get(p1,'Position');
+currentPos(2) = currentPos(2) - 0.01;
+set(p1,'Position', currentPos); hold on
 imshow(rotated)
 plot([minPixel_xr maxPixel_xr], [minPixel_yr maxPixel_yr], 'r', 'LineWidth', 5)
 title('Rotated Actuator')
-xlabel(['Radius of inflated actuator = ', num2str(round(radius_r, 3)), 'cm'])
+
+xlabel(['Radius of inflated actuator = ', num2str(round(radius_r, 3)), 'cm'],'Position',[600 1760])
 saveas(gcf, 'Progression/Radius.png')
+
 
