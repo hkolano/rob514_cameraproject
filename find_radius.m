@@ -9,6 +9,7 @@ Dependencies:
 Matlab Image Processing Toolbox
 
 Last modified by Aiden Shaevitz 11/3/2020
+
 %}
 clc
 clearvars
@@ -32,6 +33,7 @@ actuator_pic_1 = imread('Pictures/DSC_0278.JPG');
 %% Pre-process images
 % Turn the image to grayscale
 gray_image = rgb2gray(actuator_pic_1);
+imwrite(gray_image, 'Progression/GrayImage.png')
 % figure
 % imshow(gray_image)
 % title('Grayscale version of image')
@@ -40,12 +42,14 @@ gray_image = rgb2gray(actuator_pic_1);
 % Threshold for creating binary image, may need adjusting for each image
 threshold = 0.62; 
 binary_image = imbinarize(gray_image, threshold);
+imwrite(binary_image, 'Progression/BinaryImage.png')
 % figure
 % imshow(binary_image)
 % title('Binary version of image')
 
 % Fill in holes
 binary_filled = imfill(binary_image,'holes');
+imwrite(binary_filled, 'Progression/BinaryFilled.png')
 % figure
 % imshow(binary_filled)
 % title('Binary image filled with imfill')
@@ -60,6 +64,7 @@ stats = regionprops('table', L, 'Area', 'FilledImage');
 [MaxArea, MaxAreaIndex] = max(stats.Area);
 % Get just the object in an image (needs to get out of cell struct)
 isolated_actuator_img = cell2mat(stats.FilledImage(MaxAreaIndex));
+imwrite(isolated_actuator_img, 'Progression/IsolatedActuator.png')
 
 %% Analyze the isolated object
 objstats = regionprops('table', isolated_actuator_img, 'MajoraxisLength', 'MinoraxisLength', 'Orientation', 'Centroid', 'Extrema');
@@ -128,5 +133,8 @@ set(p1,'Position', currentPos); hold on
 imshow(rotated)
 plot([minPixel_xr maxPixel_xr], [minPixel_yr maxPixel_yr], 'r', 'LineWidth', 5)
 title('Rotated Actuator')
+
 xlabel(['Radius of inflated actuator = ', num2str(round(radius_r, 3)), 'cm'],'Position',[600 1760])
+saveas(gcf, 'Progression/Radius.png')
+
 
