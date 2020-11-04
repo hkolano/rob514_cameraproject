@@ -2,6 +2,8 @@
 
 See the Wiki for documentation. 
 
+Running find_radius.m should take an image from the Pictures file and find the radius of the inflated actuator. 
+
 ## Folders
 
 "Pictures" holds the raw images. 
