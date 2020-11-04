@@ -8,7 +8,7 @@ actuator from a picture.
 Dependencies:
 Matlab Image Processing Toolbox
 
-Last modified by Hannah Kolano 10/31/2020
+Last modified by Aiden Shaevitz 11/3/2020
 %}
 clc
 clearvars
@@ -82,7 +82,8 @@ radius = physicalWidth / 2;
 
 %% Plot object (unrotated)
 % Display the actuator
-figure; subplot(1,3,1); hold on
+figure; set(gcf,[100 10subplot(1,2,1)
+hold on
 imshow(isolated_actuator_img)
 plot([minPixel_x maxPixel_x], [minPixel_y maxPixel_y], 'r', 'LineWidth', 5)
 title('Unrotated Actuator')
@@ -104,13 +105,13 @@ if orientation > 0
 else
     rotated = imrotate(isolated_actuator_img, (-90-orientation));
 end
-
+% Object analysis
 objstats_r = regionprops('table', rotated, 'Extrema', 'Orientation');
 extrema_r = cell2mat(objstats_r.Extrema);
 [minPixel_xr, minPixelIndex_r] = min(extrema_r(:,1));
 [maxPixel_xr, maxPixelIndex_r] = max(extrema_r(:,1));
-minPixel_y2 = extrema_r(minPixelIndex_r, 2);
-maxPixel_y2 = extrema_r(maxPixelIndex_r, 2);
+minPixel_yr = extrema_r(minPixelIndex_r, 2);
+maxPixel_yr = extrema_r(maxPixelIndex_r, 2);
 
 %Object width in pixels
 pixelWidth_r = sqrt((maxPixel_xr - minPixel_xr)^2 + (maxPixel_yr - minPixel_yr)^2);
@@ -118,10 +119,13 @@ pixelWidth_r = sqrt((maxPixel_xr - minPixel_xr)^2 + (maxPixel_yr - minPixel_yr)^
 physicalWidth_r = pixelWidth_r * ratio;
 % Radius (cm)
 radius_r = physicalWidth_r / 2;
-subplot(1,3,3)
+% Plot rotated object
+p1 = subplot(1,2,2); 
+currentPos =  get(p1,'Position');
+currentPos(2) = currentPos(2) - 0.012;
+set(p1,'Position', currentPos); hold on
 imshow(rotated)
-title('rotated')
-xlabel(['Radius of inflated actuator = ', num2str(round(radius_r, 3)), 'cm'])
-hold on
+plot([minPixel_xr maxPixel_xr], [minPixel_yr maxPixel_yr], 'r', 'LineWidth', 5)
+title('Rotated Actuator')
+xlabel(['Radius of inflated actuator = ', num2str(round(radius_r, 3)), 'cm'],'Position',[600 1700])
 
-plot([minPixel2 maxPixel2], [minPixel_y2 maxPixel_y2], 'r', 'LineWidth', 5)

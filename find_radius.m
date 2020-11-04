@@ -25,7 +25,7 @@ pixel2 = [3630 2545];
 ratio = 15 / (3630-868);
 
 % read in the image of the actuator
-actuator_pic_1 = imread('Pictures/DSC_0276.JPG');
+actuator_pic_1 = imread('Pictures/DSC_0278.JPG');
 % imshow(actuator_pic_1) % shows image in window
 % whos actuator_pic_1 % prints info about image
 
@@ -37,7 +37,8 @@ gray_image = rgb2gray(actuator_pic_1);
 % title('Grayscale version of image')
 
 % Make the image binary
-threshold = 0.65; % set threshold for creating binary image
+% Threshold for creating binary image, may need adjusting for each image
+threshold = 0.62; 
 binary_image = imbinarize(gray_image, threshold);
 % figure
 % imshow(binary_image)
@@ -82,11 +83,12 @@ radius = physicalWidth / 2;
 
 %% Plot object (unrotated)
 % Display the actuator
-figure; subplot(2, 4, [1 2 5 6]); hold on
+figure; set(gcf,'Position',[100 100 1000 500]); subplot(1,2,1);
+hold on
 imshow(isolated_actuator_img)
 plot([minPixel_x maxPixel_x], [minPixel_y maxPixel_y], 'r', 'LineWidth', 5)
 title('Unrotated Actuator')
-xlabel(['Radius of inflated actuator = ', num2str(round(radius, 3)), 'cm'])
+xlabel(['Radius of inflated actuator = ', num2str(round(radius, 3)), 'cm'],'Position',[600 1750])
 
 %%  Construct ellipse from object analysis
 theta = linspace(0, 2*pi);
@@ -119,9 +121,12 @@ physicalWidth_r = pixelWidth_r * ratio;
 % Radius (cm)
 radius_r = physicalWidth_r / 2;
 % Plot rotated object
-subplot(2,4,[3 4 7 8]); hold on
+p1 = subplot(1,2,2); 
+currentPos =  get(p1,'Position');
+currentPos(2) = currentPos(2) - 0.01;
+set(p1,'Position', currentPos); hold on
 imshow(rotated)
 plot([minPixel_xr maxPixel_xr], [minPixel_yr maxPixel_yr], 'r', 'LineWidth', 5)
 title('Rotated Actuator')
-xlabel(['Radius of inflated actuator = ', num2str(round(radius_r, 3)), 'cm'])
+xlabel(['Radius of inflated actuator = ', num2str(round(radius_r, 3)), 'cm'],'Position',[600 1760])
 
