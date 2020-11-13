@@ -11,7 +11,10 @@ Matlab Computer Vision Toolbox
 Last modified by Natasha Troxler 11/12/2019
 
 %}
+
 clc
+clearvars
+
 %% Load camera parameters from calibration files
 load('CameraCalibration/Nikon/NikonParams.mat')
 nikonCamParams = cameraParams;
@@ -25,18 +28,19 @@ canonCamParams = cameraParams;
 left_img = imread('Pictures/FrontCam-Nikon/Right1.JPG');
 right_img = imread('Pictures/FrontCam-Nikon/Left1.JPG');
 
-
 % Show undistorted images
-% figure
-% imshowpair(nikon_img, canon_img, 'montage');
-% title('Original Images');
+%{
+figure
+imshowpair(nikon_img, canon_img, 'montage');
+title('Original Images');
 
 
-% left_img = undistortImage(left_img, nikonCamParams);
-% right_img = undistortImage(right_img, nikonCamParams);
-% figure
-% imshowpair(left_img, right_img, 'montage');
-% title('Undistorted Images');
+left_img = undistortImage(left_img, nikonCamParams);
+right_img = undistortImage(right_img, nikonCamParams);
+figure
+imshowpair(left_img, right_img, 'montage');
+title('Undistorted Images');
+%}
 
 %% Feature point detection
 % Detect feature points
@@ -45,20 +49,22 @@ imagePoints2 = detectFASTFeatures(rgb2gray(right_img), 'MinQuality', 0.12);
 
 
 % Visualize detected points for nikon and canon images
-% figure
-% subplot(1,2,1)
-% imshow(right_img, 'InitialMagnification', 50);
-% title('150 Strongest Corners from the First Image');
-% hold on
-% plot(selectStrongest(imagePoints1, 150));
-% 
-% 
-% % Visualize detected points
-% subplot(1,2,2)
-% imshow(left_img, 'InitialMagnification', 50);
-% title('150 Strongest Corners from the Second Image');
-% hold on
-% plot(selectStrongest(imagePoints2, 150));
+%{
+figure
+subplot(1,2,1)
+imshow(right_img, 'InitialMagnification', 50);
+title('150 Strongest Corners from the First Image');
+hold on
+plot(selectStrongest(imagePoints1, 150));
+
+
+% Visualize detected points
+subplot(1,2,2)
+imshow(left_img, 'InitialMagnification', 50);
+title('150 Strongest Corners from the Second Image');
+hold on
+plot(selectStrongest(imagePoints2, 150));
+%}
 
 %Track points
 tracker = vision.PointTracker('MaxBidirectionalError', 1, 'NumPyramidLevels', 5);
@@ -128,6 +134,8 @@ ptCloud = pointCloud(points3D, 'Color', color);
 
 % Visualize the camera locations and orientations
 cameraSize = 0.3;
+
+%{
 figure
 plotCamera('Size', cameraSize, 'Color', 'r', 'Label', '1', 'Opacity', 0);
 hold on
@@ -150,11 +158,41 @@ globe = pcfitsphere(ptCloud, 0.1);
 plot(globe);
 title('Estimated Location and Size of the Globe');
 hold off
-
-% Label the axes
 xlabel('x-axis');
 ylabel('y-axis');
-zlabel('z-axis')
+zlabel('z-axis'); 
+%}
 
-title('Up to Scale Reconstruction of the Scene');
+globe = pcfitsphere(ptCloud, 0.1);
+
+%% scaling
+scaleFactor = 3.055 / globe.Radius;
+ptCloud = pointCloud(points3D * scaleFactor, 'Color', color);
+t = t * scaleFactor;
+globe = pcfitsphere(ptCloud, 0.1);
+
+figure
+plotCamera('Size', cameraSize, 'Color', 'r', 'Label', '1', 'Opacity', 0);
+hold on
+grid on
+plotCamera('Location', t, 'Orientation', R, 'Size', cameraSize, ...
+    'Color', 'b', 'Label', '2', 'Opacity', 0);
+
+
+% plot(globe)
+% Visualize the point cloud
+pcshow(ptCloud, 'VerticalAxis', 'y', 'VerticalAxisDir', 'down', ...
+    'MarkerSize', 45);
+
+% Rotate and zoom the plot
+camorbit(0, -30);
+camzoom(1.5);
+xlabel('x-axis (cm)');
+ylabel('y-axis (cm)');
+zlabel('z-axis (cm)');
+title('Poorly Fitted Sphere')
+
+
+% Label the axes
+title('Up to Scale Reconstruction of the Scene','Color', 'black');
 pcwrite(ptCloud,'ptCloudRaw.ply');
