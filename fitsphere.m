@@ -7,38 +7,56 @@ Code purpose: use two images from two cameras to reconstruct a 3D sphere.
 Dependencies:
 Matlab Computer Vision Toolbox
 
-Last modified by Hannah Kolano 11/11/2020
+Last modified by Aiden Shaevitz 11/12/2020
 
 %}
 
-% Load the camera parameters from the calibration
+%% Load camera parameters from calibration files
 load('CameraCalibration/Nikon/NikonParams.mat')
 nikonCamParams = cameraParams;
 
 load('CameraCalibration/Canon/CanonParams.mat')
 canonCamParams = cameraParams;
 
+%% Load images from both cameras
 % Load the two actuator images from the different cameras
-nikon_img = imread('Pictures/FrontCam-Nikon/DSC_0370.JPG');
-canon_img = imread('Pictures/SideCam-Canon/IMG_0418.JPG');
+nikon_img = imread('Pictures/FrontCam-Nikon/DSC_0429.JPG');
+canon_img = imread('Pictures/SideCam-Canon/IMG_0435.JPG');
 
 % Show undistorted images
 % figure
 % imshowpair(nikon_img, canon_img, 'montage'); 
 % title('Original Images');
 
-% nikon_img = undistortImage(nikon_img, nikonCamParams);
-% canon_img = undistortImage(canon_img, canonCamParams);
+nikon_img = undistortImage(nikon_img, nikonCamParams);
+canon_img = histeq(undistortImage(canon_img, canonCamParams));
 % figure 
 % imshowpair(nikon_img, canon_img, 'montage');
 % title('Undistorted Images');
 
+%% Feature point detection
 % Detect feature points
-imagePoints1 = detectMinEigenFeatures(rgb2gray(nikon_img), 'MinQuality', 0.1);
+imagePoints1 = detectMinEigenFeatures(rgb2gray(nikon_img), 'MinQuality', 0.25);
+imagePoints2 = detectMinEigenFeatures(rgb2gray(canon_img), 'MinQuality', 0.25);
 
-% Visualize detected points
+% Visualize detected points for nikon and canon images
 figure
+subplot(1,2,1)
 imshow(nikon_img, 'InitialMagnification', 50);
 title('150 Strongest Corners from the First Image');
 hold on
 plot(selectStrongest(imagePoints1, 150));
+
+subplot(1,2,2)
+imshow(canon_img, 'InitialMagnification', 50);
+title('Strongest Corners from Canon Image');
+hold on
+plot(selectStrongest(imagePoints2, 150));
+
+%% Track points
+
+
+
+
+
+
