@@ -46,7 +46,7 @@ imagePoints2 = detectMinEigenFeatures(rgb2gray(right_img), 'MinQuality', 0.1);
 % Visualize detected points for nikon and canon images
 figure
 subplot(1,2,1)
-imshow(nikon_img, 'InitialMagnification', 50);
+imshow(right_img, 'InitialMagnification', 50);
 title('150 Strongest Corners from the First Image');
 hold on
 plot(selectStrongest(imagePoints1, 150));
@@ -54,7 +54,7 @@ plot(selectStrongest(imagePoints1, 150));
 
 % Visualize detected points
 subplot(1,2,2)
-imshow(canon_img, 'InitialMagnification', 50);
+imshow(left_img, 'InitialMagnification', 50);
 title('150 Strongest Corners from the Second Image');
 hold on
 plot(selectStrongest(imagePoints2, 150));
@@ -75,8 +75,16 @@ matchedPoints2 = imagePoints2(validIdx, :);
 figure
 showMatchedFeatures(left_img, right_img, matchedPoints1, matchedPoints2);
 title('Tracked Features');
-subplot(1,2,2)
-imshow(canon_img, 'InitialMagnification', 50);
-title('Strongest Corners from Canon Image');
-hold on
-plot(selectStrongest(imagePoints2, 150));
+
+% Estimate the fundamental matrix
+[fMatrix, epipolarInliers] = estimateFundamentalMatrix(...
+  matchedPoints1, matchedPoints2, 'Method', 'MSAC', 'NumTrials', 10000);
+
+% Find epipolar inliers
+inlierPoints1 = matchedPoints1(epipolarInliers, :);
+inlierPoints2 = matchedPoints2(epipolarInliers, :);
+
+% Display inlier matches
+figure
+showMatchedFeatures(left_img, right_img, inlierPoints1, inlierPoints2);
+title('Epipolar Inliers');
