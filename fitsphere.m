@@ -11,7 +11,7 @@ Matlab Computer Vision Toolbox
 Last modified by Natasha Troxler 11/12/2019
 
 %}
-
+clc
 %% Load camera parameters from calibration files
 load('CameraCalibration/Nikon/NikonParams.mat')
 nikonCamParams = cameraParams;
@@ -32,33 +32,33 @@ right_img = imread('Pictures/FrontCam-Nikon/Left1.JPG');
 % title('Original Images');
 
 
-left_img = undistortImage(left_img, nikonCamParams);
-right_img = undistortImage(right_img, nikonCamParams);
-figure
-imshowpair(left_img, right_img, 'montage');
-title('Undistorted Images');
+% left_img = undistortImage(left_img, nikonCamParams);
+% right_img = undistortImage(right_img, nikonCamParams);
+% figure
+% imshowpair(left_img, right_img, 'montage');
+% title('Undistorted Images');
 
 %% Feature point detection
 % Detect feature points
-imagePoints1 = detectMinEigenFeatures(rgb2gray(left_img), 'MinQuality', 0.1);
-imagePoints2 = detectMinEigenFeatures(rgb2gray(right_img), 'MinQuality', 0.1);
+imagePoints1 = detectFASTFeatures(rgb2gray(left_img), 'MinQuality', 0.12);
+imagePoints2 = detectFASTFeatures(rgb2gray(right_img), 'MinQuality', 0.12);
 
 
 % Visualize detected points for nikon and canon images
-figure
-subplot(1,2,1)
-imshow(right_img, 'InitialMagnification', 50);
-title('150 Strongest Corners from the First Image');
-hold on
-plot(selectStrongest(imagePoints1, 150));
-
-
-% Visualize detected points
-subplot(1,2,2)
-imshow(left_img, 'InitialMagnification', 50);
-title('150 Strongest Corners from the Second Image');
-hold on
-plot(selectStrongest(imagePoints2, 150));
+% figure
+% subplot(1,2,1)
+% imshow(right_img, 'InitialMagnification', 50);
+% title('150 Strongest Corners from the First Image');
+% hold on
+% plot(selectStrongest(imagePoints1, 150));
+% 
+% 
+% % Visualize detected points
+% subplot(1,2,2)
+% imshow(left_img, 'InitialMagnification', 50);
+% title('150 Strongest Corners from the Second Image');
+% hold on
+% plot(selectStrongest(imagePoints2, 150));
 
 %Track points
 tracker = vision.PointTracker('MaxBidirectionalError', 1, 'NumPyramidLevels', 5);
@@ -90,7 +90,7 @@ figure
 showMatchedFeatures(left_img, right_img, inlierPoints1, inlierPoints2);
 title('Epipolar Inliers');
 
-[R, t] = cameraPose(fMatrix, nikonCamParams, inlierPoints1, inlierPoints2)
+[R, t] = cameraPose(fMatrix, nikonCamParams, inlierPoints1, inlierPoints2);
 
 % Detect dense feature points
 imagePoints1 = detectMinEigenFeatures(rgb2gray(left_img), 'MinQuality', 0.001);
@@ -157,3 +157,4 @@ ylabel('y-axis');
 zlabel('z-axis')
 
 title('Up to Scale Reconstruction of the Scene');
+pcwrite(ptCloud,'ptCloudRaw.ply');
