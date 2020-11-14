@@ -19,3 +19,5 @@ ptCloudSegmentation.m attempts several methods of reducing noise in the point cl
 "Figures" holds the output images, including estimated radii, for the four input images. 
 
 "CameraCalibration" holds the calibration images for the two cameras being used as well as the MatLab code that provides the camera properties.
+
+"fit_ellipse" is the code from Matlab File Exchange that fits the ellipse. 
