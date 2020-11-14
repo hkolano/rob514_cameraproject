@@ -1,8 +1,14 @@
 # rob514_cameraproject
 
-See the Wiki for documentation. 
+See the Wiki for documentation for both the Object ID and Camera projects.
 
-Running find_radius.m should take an image from the Pictures file and find the radius of the inflated actuator. 
+Running find_radius.m should take an image from the Pictures file and find the radius of the inflated actuator. (Object ID project)
+
+Running fitsphere.m should take two images from the Pictures file (/Nikon) and reconstruct a sphere. It creates a point cloud (ptCloudRaw.ply) of the actuator and its surroundings. (Camera project) 
+
+fitellipse.m takes the saved point cloud and attempts to fit an ellipse to it. It works some of the time. (Camera project)
+
+ptCloudSegmentation.m attempts several methods of reducing noise in the point cloud data to fit the ellipse. (Camera project)
 
 ## Folders
 
